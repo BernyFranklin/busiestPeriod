@@ -1,7 +1,7 @@
 package com.busiestperiod;
 
 /**
- * Hello world!
+ * You are given
  *
  */
 public class App 
