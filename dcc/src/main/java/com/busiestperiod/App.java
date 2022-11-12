@@ -53,11 +53,14 @@ public class App
     }
     // Generate random count
     private static int setCount() {
+        // COunt
+        int count = 0;
         // Create random obj
         Random rand = new Random();
         // Set var for count
-        int count = rand.nextInt(15);
-
+        while(count == 0) {
+            count = rand.nextInt(15);
+        }
         return count;
     }
     // Generate random event
