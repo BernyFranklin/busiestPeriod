@@ -21,7 +21,7 @@ public class EntryData {
         s += "count: " + count;
         s += ", ";
         s += "type: " + type;
-        s += "}";
+        s += " }";
 
         return s;
     }

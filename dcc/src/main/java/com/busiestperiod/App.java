@@ -12,7 +12,7 @@ import java.util.Random;
  * This means 2 people left.
  * 
  * Find the busiest period in the building . Return it as a pair (Start, End)
- * timestamps. YOu can assume the building 
+ * timestamps. YOu can assume the building starts empty and ends empty
  *
  */
 public class App 
@@ -21,15 +21,22 @@ public class App
     private static final long START = 1668178800;
     private static final long END = 1668207600;
     private static final long FIVE_MIN = 300;
+    private static final String ENTRY = "ENTRY";
+    private static final String EXIT = "EXIT";
 
     // Main
     public static void main( String[] args )
     {
+        // Create list to store data
         LinkedList<EntryData> list = new LinkedList<EntryData>();
+        // Generate random shift of events
         list = generateShift();
-        for (EntryData item: list) {
-            System.out.println(item.toString());
-        }
+        // Print the list
+        printShift(list);
+        // Create array for busiest time
+        Long[] busyBusy = findBusiestTime(list);
+        // Print data
+        System.out.printf("Busiest time {Start, End}: {%d, %d}", busyBusy[0], busyBusy[1]);
         
     }
 
@@ -42,11 +49,11 @@ public class App
         String type = "";
         // If even set ENTRY
         if (num == 0) {
-            type = "ENTRY";
+            type = ENTRY;
         }
         // Else set exit
         else {
-            type = "EXIT";
+            type = EXIT;
         }
 
         return type;
@@ -64,11 +71,11 @@ public class App
         return count;
     }
     // Generate random event
-    private static EntryData generateData(Long timestamp, int count) {
+    private static EntryData generateRandom(Long timestamp, int count) {
         int n = setCount();
         String t = chooseType();
         // Used to make sure count doesn't go negative
-        if (n > count && t == "EXIT") {
+        if (n > count && t == EXIT) {
             n = count;
         }
         EntryData newRandom = new EntryData(timestamp, n, t);
@@ -78,14 +85,14 @@ public class App
     // Generate an entry
     private static EntryData generateEntry(Long timestamp) {
         int n = setCount();
-        String t = "ENTRY";
+        String t = ENTRY;
         EntryData newEntry = new EntryData(timestamp, n, t);
 
         return newEntry;
     }
     // Generate an exit
     private static EntryData generateExit(Long timestamp, int count) {
-        String t = "EXIT";
+        String t = EXIT;
         EntryData newExit = new EntryData(timestamp, count, t);
 
         return newExit;
@@ -96,10 +103,11 @@ public class App
         long time = START;
         // Create list to store data
         LinkedList<EntryData> list = new LinkedList<EntryData>();
-        // Initialize counter
+        // Initialize counter and maxCount
         int totalPeeps = 0;
         // First event will be an entry
         EntryData firstEvent = generateEntry(time);
+        list.add(firstEvent);
         // Increment time
         time += FIVE_MIN;
         // Increment count
@@ -107,29 +115,74 @@ public class App
 
         // Continue to loop to populate a shift of events
         while (time <= END) {
+            // If the day is done, evacute all people
             if (time == END){
                 EntryData temp = generateExit(time, totalPeeps);
                 list.add(temp);
+                totalPeeps -= temp.count();
                 break;
             }
-            else if (totalPeeps == 0) {
+            // If building empty and during business hours, add people
+            else if (totalPeeps == 0 && time < END) {
                 EntryData temp = generateEntry(time);
                 list.add(temp);
+                totalPeeps += temp.count();
             }
+            // Random events
             else{
-                EntryData temp = generateData(time, totalPeeps);
+                EntryData temp = generateRandom(time, totalPeeps);
                 list.add(temp);
                 // Add for entry subtract for exit
-                if (temp.type() == "ENTRY") {
+                if (temp.type() == ENTRY) {
                     totalPeeps += temp.count();
                 }
                 else{
                     totalPeeps -= temp.count();
                 }
             }
+            // Add five minutes to count
             time += FIVE_MIN;
         }
-        System.out.printf("Total people left: %d\n", totalPeeps);
         return list;
+    }
+    // Find busiest time of day
+    private static Long[] findBusiestTime(LinkedList<EntryData> list) {
+        // Initialize array to store values
+        Long[] busiestTime = new Long[2];
+        // Initialize some counters
+        int maxPeeps = 0;
+        int totalPeeps = 0;
+        // Iterate through list and keep track of how many people at any time
+        for (EntryData item: list) {
+            if (item.type() == ENTRY) {
+                totalPeeps += item.count();
+            }
+            else {
+                totalPeeps -= item.count();
+            }
+
+            if (totalPeeps > maxPeeps){
+                maxPeeps = totalPeeps;
+                busiestTime[0] = item.timestamp();
+                busiestTime[1] = busiestTime[0] + FIVE_MIN;
+            }
+        }
+        // Return Long[]
+        return busiestTime;
+    }
+    // Print list of data
+    private static void printShift(LinkedList<EntryData> list) {
+        int buildingCount = 0;
+
+        for (EntryData item: list) {
+            if (item.type() == ENTRY) {
+                buildingCount += item.count();
+            }
+            else {
+                buildingCount -= item.count();
+            }
+            System.out.println(item.toString());
+            System.out.printf("Total of people in building: %d\n", buildingCount);
+        }
     }
 }   
