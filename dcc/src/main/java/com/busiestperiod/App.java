@@ -64,9 +64,13 @@ public class App
         return count;
     }
     // Generate random event
-    private static EntryData generateData(Long timestamp) {
+    private static EntryData generateData(Long timestamp, int count) {
         int n = setCount();
         String t = chooseType();
+        // Used to make sure count doesn't go negative
+        if (n > count && t == "EXIT") {
+            n = count;
+        }
         EntryData newRandom = new EntryData(timestamp, n, t);
 
         return newRandom;
@@ -88,18 +92,32 @@ public class App
     }
     // Generate shift
     private static LinkedList<EntryData> generateShift() {
+        // Set start time
         long time = START;
+        // Create list to store data
         LinkedList<EntryData> list = new LinkedList<EntryData>();
+        // Initialize counter
         int totalPeeps = 0;
+        // First event will be an entry
+        EntryData firstEvent = generateEntry(time);
+        // Increment time
+        time += FIVE_MIN;
+        // Increment count
+        totalPeeps += firstEvent.count();
 
+        // Continue to loop to populate a shift of events
         while (time <= END) {
             if (time == END){
-                EntryData temp = new EntryData(time, totalPeeps, "EXIT");
+                EntryData temp = generateExit(time, totalPeeps);
                 list.add(temp);
                 break;
             }
+            else if (totalPeeps == 0) {
+                EntryData temp = generateEntry(time);
+                list.add(temp);
+            }
             else{
-                EntryData temp = generateData(time);
+                EntryData temp = generateData(time, totalPeeps);
                 list.add(temp);
                 // Add for entry subtract for exit
                 if (temp.type() == "ENTRY") {
