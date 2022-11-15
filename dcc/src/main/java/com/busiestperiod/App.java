@@ -67,9 +67,24 @@ public class App
     private static EntryData generateData(Long timestamp) {
         int n = setCount();
         String t = chooseType();
+        EntryData newRandom = new EntryData(timestamp, n, t);
+
+        return newRandom;
+    }
+    // Generate an entry
+    private static EntryData generateEntry(Long timestamp) {
+        int n = setCount();
+        String t = "ENTRY";
         EntryData newEntry = new EntryData(timestamp, n, t);
 
         return newEntry;
+    }
+    // Generate an exit
+    private static EntryData generateExit(Long timestamp, int count) {
+        String t = "EXIT";
+        EntryData newExit = new EntryData(timestamp, count, t);
+
+        return newExit;
     }
     // Generate shift
     private static LinkedList<EntryData> generateShift() {
