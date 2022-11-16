@@ -18,8 +18,8 @@ import java.util.Random;
 public class App 
 {
     // Constants
-    private static final long START = 1668178800;
-    private static final long END = 1668207600;
+    private static final long START = 1668178800; // 0700
+    private static final long END = 1668207600;   // 1500
     private static final long FIVE_MIN = 300;
     private static final String ENTRY = "ENTRY";
     private static final String EXIT = "EXIT";
@@ -42,7 +42,6 @@ public class App
         busyBusy[0], busyBusy[1], max);
         
     }
-
     // Generate random entry type
     private static String chooseType() {
         // Create random object
