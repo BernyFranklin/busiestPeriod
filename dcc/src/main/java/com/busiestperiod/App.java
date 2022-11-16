@@ -35,8 +35,11 @@ public class App
         printShift(list);
         // Create array for busiest time
         Long[] busyBusy = findBusiestTime(list);
+        // Get the max amount of people
+        int max = getMax(list);
         // Print data
-        System.out.printf("Busiest time {Start, End}: {%d, %d}", busyBusy[0], busyBusy[1]);
+        System.out.printf("Busiest time {Start, End}: {%d, %d} with %d people in building\n", 
+        busyBusy[0], busyBusy[1], max);
         
     }
 
@@ -44,7 +47,7 @@ public class App
     private static String chooseType() {
         // Create random object
         Random rand = new Random();
-        // Random number for choice
+        // Random number for choice between 0 and 1
         int num = rand.nextInt(2);
         String type = "";
         // If even set ENTRY
@@ -60,24 +63,25 @@ public class App
     }
     // Generate random count
     private static int setCount() {
-        // COunt
+        // Count
         int count = 0;
         // Create random obj
         Random rand = new Random();
-        // Set var for count
+        // Set var for count, generates random number between 1 & 14, 0 will keep in loop
         while(count == 0) {
             count = rand.nextInt(15);
         }
         return count;
     }
     // Generate random event
-    private static EntryData generateRandom(Long timestamp, int count) {
+    private static EntryData generateRandom(Long timestamp, int totalPeeps) {
         int n = setCount();
         String t = chooseType();
         // Used to make sure count doesn't go negative
-        if (n > count && t == EXIT) {
-            n = count;
+        if (n > totalPeeps && t == EXIT) {
+            n = totalPeeps;
         }
+        // Create new object
         EntryData newRandom = new EntryData(timestamp, n, t);
 
         return newRandom;
@@ -86,14 +90,16 @@ public class App
     private static EntryData generateEntry(Long timestamp) {
         int n = setCount();
         String t = ENTRY;
+        // Create new object
         EntryData newEntry = new EntryData(timestamp, n, t);
 
         return newEntry;
     }
     // Generate an exit
-    private static EntryData generateExit(Long timestamp, int count) {
+    private static EntryData generateFinalExit(Long timestamp, int totalPeeps) {
         String t = EXIT;
-        EntryData newExit = new EntryData(timestamp, count, t);
+        // Create new object
+        EntryData newExit = new EntryData(timestamp, totalPeeps, t);
 
         return newExit;
     }
@@ -103,42 +109,48 @@ public class App
         long time = START;
         // Create list to store data
         LinkedList<EntryData> list = new LinkedList<EntryData>();
-        // Initialize counter and maxCount
+        // Initialize counter
         int totalPeeps = 0;
         // First event will be an entry
         EntryData firstEvent = generateEntry(time);
+         // Increment count
+         totalPeeps += firstEvent.count();
+         firstEvent.setRemaining(totalPeeps);
         list.add(firstEvent);
         // Increment time
         time += FIVE_MIN;
-        // Increment count
-        totalPeeps += firstEvent.count();
 
         // Continue to loop to populate a shift of events
         while (time <= END) {
             // If the day is done, evacute all people
             if (time == END){
-                EntryData temp = generateExit(time, totalPeeps);
-                list.add(temp);
+                EntryData temp = generateFinalExit(time, totalPeeps);
                 totalPeeps -= temp.count();
+                temp.setRemaining(totalPeeps);
+                list.add(temp);
                 break;
             }
             // If building empty and during business hours, add people
             else if (totalPeeps == 0 && time < END) {
                 EntryData temp = generateEntry(time);
-                list.add(temp);
                 totalPeeps += temp.count();
+                temp.setRemaining(totalPeeps);
+                list.add(temp);
             }
             // Random events
             else{
                 EntryData temp = generateRandom(time, totalPeeps);
-                list.add(temp);
                 // Add for entry subtract for exit
                 if (temp.type() == ENTRY) {
                     totalPeeps += temp.count();
+                    temp.setRemaining(totalPeeps);
                 }
                 else{
                     totalPeeps -= temp.count();
+                    temp.setRemaining(totalPeeps);
                 }
+                // Add to list
+                list.add(temp);
             }
             // Add five minutes to count
             time += FIVE_MIN;
@@ -170,19 +182,21 @@ public class App
         // Return Long[]
         return busiestTime;
     }
+    // Return max peeps
+    private static int getMax(LinkedList<EntryData> list) {
+        int max = 0;
+        for (EntryData item: list) {
+            if (item.remaining() > max) {
+                max = item.remaining();
+            }
+        }
+        // Return max number
+        return max;
+    }
     // Print list of data
     private static void printShift(LinkedList<EntryData> list) {
-        int buildingCount = 0;
-
         for (EntryData item: list) {
-            if (item.type() == ENTRY) {
-                buildingCount += item.count();
-            }
-            else {
-                buildingCount -= item.count();
-            }
             System.out.println(item.toString());
-            System.out.printf("Total of people in building: %d\n", buildingCount);
         }
     }
 }   

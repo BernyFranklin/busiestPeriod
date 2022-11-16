@@ -4,11 +4,13 @@ public class EntryData {
     private long timestamp;
     private int count;
     private String type;
+    private int remaining;
 
     public EntryData(long timestamp, int count, String type) {
         this.timestamp = timestamp;
         this.count = count;
         this.type = type;
+        remaining = 0;
     }
 
     public String toString() {
@@ -17,10 +19,12 @@ public class EntryData {
         // Format like a json file
         s = "{ ";
         s += "timestamp: " + timestamp;
-        s += ", ";
-        s += "count: " + count;
-        s += ", ";
+        s += ",\t";
         s += "type: " + type;
+        s += ",\t";
+        s += "count: " + count;
+        s += ",\t";
+        s += "left in buidling: " + remaining;
         s += " }";
 
         return s;
@@ -36,6 +40,9 @@ public class EntryData {
     public String type() {
         return this.type;
     }
+    public int remaining() {
+        return remaining;
+    }
 
     // Setters
     public void setTimestamp(long timestamp) {
@@ -46,5 +53,8 @@ public class EntryData {
     }
     public void setType(String type) {
         this.type = type;
+    }
+    public void setRemaining(int remaining) {
+        this.remaining = remaining;
     }
 }
