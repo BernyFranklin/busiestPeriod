@@ -5,14 +5,14 @@ public class EntryData {
     private int count;
     private String type;
     private int remaining;
-
+    // Constructor
     public EntryData(long timestamp, int count, String type) {
         this.timestamp = timestamp;
         this.count = count;
         this.type = type;
         remaining = 0;
     }
-
+    // To String method
     public String toString() {
         // Initialize string
         String s = "";
@@ -29,7 +29,6 @@ public class EntryData {
 
         return s;
     }
-
     // Getters
     public long timestamp() {
         return this.timestamp;
@@ -43,7 +42,6 @@ public class EntryData {
     public int remaining() {
         return remaining;
     }
-
     // Setters
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;

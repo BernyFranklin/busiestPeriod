@@ -12,7 +12,7 @@ import java.util.Random;
  * This means 2 people left.
  * 
  * Find the busiest period in the building . Return it as a pair (Start, End)
- * timestamps. YOu can assume the building starts empty and ends empty
+ * timestamps. You can assume the building starts empty and ends empty
  *
  */
 public class App 
